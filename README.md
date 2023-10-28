@@ -39,7 +39,7 @@ No remote command terminal| |x|x
 
 ## Security:
 
-With the unfortunate discontinuation of the rssh project (www.pizzashack.org/rssh/) in 2019, the idea behind rsshr is to try to fill this gap in the simplest way possible. Security tests are being assessed, and if possible, we will try to keep the program free from such vulnerabilities until the rsync application itself implements native encryption or OpenSSH implements something like "Subsystem rsync."
+With the unfortunate discontinuation of the rssh project [rssh](www.pizzashack.org/rssh/) in 2019, the idea behind rsshr is to try to fill this gap in the simplest way possible. Security tests are being assessed, and if possible, we will try to keep the program free from such vulnerabilities until the rsync application itself implements native encryption or OpenSSH implements something like "Subsystem rsync."
 
 ## To install:
 
