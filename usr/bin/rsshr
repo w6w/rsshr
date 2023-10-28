@@ -1,0 +1,52 @@
+#!/bin/sh
+#
+#  rsshr (restricted shell to rsync over ssh) 
+#  Until rsync implements encryption (at least in the password)
+#or OpenSSH implements "Subsystem rsync" rsshr will try to 
+#be a valid alternative for file synchronizations over the  
+#network with encryption limiting users' access to the system.
+#
+#  1 - Your system needs to have OpensSSH-Server and native rsync
+#  2 - Put this in /usr/bin/rsshr
+#  3 - Make it executable
+#  4 - In /etc/passwd, change the user's default shell to this "rsshr"
+#
+#  By: MGMBR - mgmbr@yandex.com - 2023-10-14
+#
+# Version 0.1 - 2023-10-27
+
+_Me="$(whoami)"
+_Date="date +%Y-%m-%d_%H-%M-%S"
+_LogFolder="/tmp"
+# For security consider: touch /tmp/rssh.USER.log ; chown USER /tmp/rsshr.USER.log ; chattr +a /tmp/rssh.USER.log
+
+_DenySFTP="no"
+_RsyncFilter="rsync --server -[a-zA-Z.]+( --(delete|partial|log-format=X))* [.]"
+_SFTPfilter="/usr/libexec/sftp-server"
+if [[ -r /etc/rsshr.conf ]] ; then
+    _DenySFTPconf="$(cat /etc/rsshr.conf | tr -d " " | grep -a -v "^#" | grep "^DenySFTP" | cut -d"=" -f2)"
+    _LogConf="$(cat /etc/rsshr.conf | tr -d " " | grep -a -v "^#" | grep "^LogFile" | cut -d"=" -f2)"
+    [[ "$_DenySFTPconf" == "yes" || "$_DenySFTPconf" == "Y" || "$_DenySFTPconf" == "YES" || "$_DenySFTPconf" == "Yes" ]] && _DenySFTP="yes"
+    [[ -n "$(ls -ld $_LogConf | grep -E "^.r..r..r")" ]] && { _LogFolder="$_LogConf" ; _Log=""$_LogFolder"/rsshr."$_Me".log" ; }
+fi
+
+
+for i in "$@"; do
+    #excluded characters  ; & ( ) { } [ ] \ ` $ ! ? , : " < > ' * ~ + 
+    if [[ -n "$(echo "$i" | grep -E "^$_RsyncFilter |^$_SFTPfilter")" && -z "$(echo $i | grep -E "\;")" && -z "$(echo $i | grep -E "\&")" && -z "$(echo $i | grep -E "\(")" && -z "$(echo $i | grep -E "\)")" && -z "$(echo $i | grep -E "\{")" && -z "$(echo $i | grep -E "\}")" && -z "$(echo $i | grep -E "\[")" && -z "$(echo $i | grep -E "\]")" && -z "$(echo $i | grep -E "\`")" && -z "$(echo $i | grep -E '\$')" && -z "$(echo $i | grep -E "\!")" && -z "$(echo $i | grep -E "\?")" && -z "$(echo $i | grep -E "\,")" && -z "$(echo $i | grep -E "\^")" && -z "$(echo $i | grep -E "\:")" && -z "$(echo $i | grep -E "\"")" && -z "$(echo $i | grep -E '<')"  && -z "$(echo $i | grep -E '>')"  && -z "$(echo $i | grep -E \')"   && -z "$(echo $i | grep -E '\*')" && -z "$(echo $i | grep -E "\~")" && -z "$(echo $i | grep -E "\+")" ]] ; then
+        _Exec="$(echo $i | cut -c-150)"
+        #echo "$($_Date) EXE: $i" >> $_Log	#debug
+        if [[ "$_Exec" == "/usr/libexec/sftp-server" ]] ; then
+            [[ "$_DenySFTP" == "yes" ]] && { echo "$($_Date) Access DENIED to \"$_Me\" for command: '$i'" >> $_Log ; exec /bin/false ; } || exec "$_Exec" 
+        fi
+        _RsyncBase="/NULL"
+        [[ -x /usr/bin/rsync ]] && _RsyncBase="/usr/bin"
+        [[ -x /bin/rsync ]] && _RsyncBase="/bin"
+        [[ "$_RsyncBase" == "/bin" || "$_RsyncBase" == "/usr/bin" ]] || { echo "ERROR on RsyncBase: $_RsyncBase " ; exit 2 ; }
+        [[ -n "$(echo "$_Exec" | grep -E "^rsync --server")" ]] && exec $_RsyncBase/$_Exec 
+    fi
+done
+echo "$($_Date) Access DENIED to \"$_Me\" for command: '$i'" >> $_Log
+#Displayed on client Terminal:
+echo "$($_Date) Access DENIED. This action will be reported!"  
+exit 1
