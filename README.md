@@ -47,7 +47,7 @@ With the unfortunate discontinuation of the rssh project [rssh](www.pizzashack.o
 git clone https://github.com/w6w/rsshr<br>
 cd rsshr<br>
 chmod +x install.sh<br>
-./install.sh
+./install.sh --install
 
 **Manually** - Just download and copy files to:<br>
 rsshr -> /usr/bin/rsshr<br>
