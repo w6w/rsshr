@@ -1,8 +1,6 @@
 # rsshr
 Restricted shell to rsync over ssh
 
-> Under construction  🚧
-
 ## About:
 
 **RSSHR** - ("restricted shell to rsync over ssh") is an attempt to provide rsync over SSH access and limit the user's access to a shell in an SSH connection, preventing command execution on the remote system while allowing the user to synchronize their remote and local files using rsync over SSH (native to your system).
