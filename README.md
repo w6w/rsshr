@@ -53,7 +53,7 @@ rsshr.conf -> /etc/rsshr.conf<br>
 rsshr.1.gz -> /usr/share/man/man1/rsshr.1.gz
 
 ## To use:
-Change the user's default shell inside the "/etc/passwd" to "/usr/bin/rsshr" and allow the user only file transfers through rsync and sftp while denying a command execution shell.<br>
+Change the user's default shell inside the "/etc/passwd" to "/usr/bin/rsshr" (for example -> bennington:x:1720:1720::/home/bennington:/usr/bin/rsshr) and allow the user only file transfers through rsync and sftp while denying a command execution shell.<br>
 To change the location of logs or disallow SFTP, see "/etc/rsshr.conf" .
 
 
