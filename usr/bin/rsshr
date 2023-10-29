@@ -13,7 +13,7 @@
 #
 #  By: MGMBR - mgmbr@yandex.com - 2023-10-14
 #
-# Version 0.1 - 2023-10-27
+# Version 0.1-202310291051
 
 _Me="$(whoami)"
 _Date="date +%Y-%m-%d_%H-%M-%S"
@@ -23,13 +23,13 @@ _LogFolder="/tmp"
 _DenySFTP="no"
 _RsyncFilter="rsync --server -[a-zA-Z.]+( --(delete|partial|log-format=X))* [.]"
 _SFTPfilter="/usr/libexec/sftp-server"
+_Log=""$_LogFolder"/rsshr."$_Me".log"
 if [[ -r /etc/rsshr.conf ]] ; then
     _DenySFTPconf="$(cat /etc/rsshr.conf | tr -d " " | grep -a -v "^#" | grep "^DenySFTP" | cut -d"=" -f2)"
     _LogConf="$(cat /etc/rsshr.conf | tr -d " " | grep -a -v "^#" | grep "^LogFile" | cut -d"=" -f2)"
     [[ "$_DenySFTPconf" == "yes" || "$_DenySFTPconf" == "Y" || "$_DenySFTPconf" == "YES" || "$_DenySFTPconf" == "Yes" ]] && _DenySFTP="yes"
-    [[ -n "$(ls -ld $_LogConf | grep -E "^.r..r..r")" ]] && { _LogFolder="$_LogConf" ; _Log=""$_LogFolder"/rsshr."$_Me".log" ; }
+    [[ -n "$(ls -ld $_LogConf | grep -E "^.r..r..r")" && -n "$_LogConf" ]] && { _LogFolder="$_LogConf" ; _Log=""$_LogFolder"/rsshr."$_Me".log" ; }
 fi
-
 
 for i in "$@"; do
     #excluded characters  ; & ( ) { } [ ] \ ` $ ! ? , : " < > ' * ~ + 
