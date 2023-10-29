@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash --norc
 #
 #  rsshr (restricted shell to rsync over ssh) 
 #  Until rsync implements encryption (at least in the password)
